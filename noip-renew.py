@@ -25,6 +25,7 @@ from datetime import timedelta
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.service import Service
 
 
 class Logger:
@@ -63,9 +64,9 @@ class Robot:
         options.add_argument(f"user-agent={Robot.USER_AGENT}")
         if 'https_proxy' in os.environ:
             options.add_argument("proxy-server=" + os.environ['https_proxy'])
-        # service = Service(executable_path="/usr/bin/chromedriver")
-        # browser = webdriver.Chrome(options=options,service=service)
-        browser = webdriver.Chrome(options=options)
+        service = Service(executable_path="/usr/bin/chromedriver")
+        browser = webdriver.Chrome(options=options,service=service)
+        # browser = webdriver.Chrome(options=options)
         browser.set_page_load_timeout(90)  # Extended timeout for Raspberry Pi.
         return browser
 
