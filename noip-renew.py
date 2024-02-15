@@ -51,6 +51,11 @@ class Robot:
         self.password = password
         self.browser = self.init_browser()
         self.logger = Logger(debug)
+        is_exist = os.path.exists(Robot.SCREENSHOT_DIR)
+        if not is_exist:
+            # Create a new directory because it does not exist
+            os.makedirs(Robot.SCREENSHOT_DIR)
+            print("The screenshots directory is created!")
 
     @staticmethod
     def init_browser():
@@ -65,7 +70,7 @@ class Robot:
         if 'https_proxy' in os.environ:
             options.add_argument("proxy-server=" + os.environ['https_proxy'])
         service = Service(executable_path="/usr/bin/chromedriver")
-        browser = webdriver.Chrome(options=options,service=service)
+        browser = webdriver.Chrome(options=options, service=service)
         # browser = webdriver.Chrome(options=options)
         browser.set_page_load_timeout(90)  # Extended timeout for Raspberry Pi.
         return browser
