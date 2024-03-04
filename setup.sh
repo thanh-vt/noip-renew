@@ -85,7 +85,10 @@ function deploy() {
     $SUDO cp noip-renew-skd.sh $INSTDIR
     $SUDO cp noip-renew.sh $INSTEXE
     $SUDO chown $USER $INSTEXE
+    $SUDO chown $USER $INSTDIR/noip-renew.py
+    $SUDO chmod 755 $INSTDIR/noip-renew.py
     $SUDO chown $USER $INSTDIR/noip-renew-skd.sh
+    $SUDO chmod 755 $INSTDIR/noip-renew-skd.sh
     $SUDO chmod 700 $INSTEXE
     noip
     $SUDO crontab -u $USER -l | grep -v '/noip-renew*'  | $SUDO crontab -u $USER -
