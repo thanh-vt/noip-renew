@@ -78,7 +78,8 @@ function deploy() {
     if ls $INSTDIR/*noip-renew* 1> /dev/null 2>&1; then
         $SUDO rm $INSTDIR/*noip-renew*
     fi
-
+    $SUDO mkdir -p $INSTDIR/screenshots
+    $SUDO chown -R $USER $INSTDIR/screenshots
     $SUDO mkdir -p $LOGDIR
     $SUDO chown $USER $LOGDIR
     $SUDO cp noip-renew.py $INSTDIR
