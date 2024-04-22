@@ -154,9 +154,9 @@ class Robot:
         try:
             host_remaining_days = host.find_element(By.XPATH, ".//a[@class='no-link-style']").text
         except:
-            host_remaining_days = "Expires in 0 days"
+            host_remaining_days = host.find_element(By.XPATH, ".//a[text()='Active']").get_attribute("data-original-title")
             pass
-        regex_match = re.search("\\d+", host_remaining_days)
+        regex_match = re.search("in (\\d+) day", host_remaining_days)
         if regex_match is None:
             raise Exception("Expiration days label does not match the expected pattern in iteration: {iteration}")
         expiration_days = int(regex_match.group(0))
