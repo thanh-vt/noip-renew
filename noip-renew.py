@@ -108,11 +108,14 @@ class Robot:
                     break
                 otp = totp.now()
                 ele_otp.send_keys(otp)
+                ele_trust_device = self.get_trust_device_checkbox()
+                if ele_trust_device.get_attribute("value") != "1":
+                    ele_trust_device.click()
                 self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.png")
-                ele_confirm = self.browser.find_element(By.XPATH, "//input[(@type='submit') and (@value = 'Verify')]")
+                ele_confirm = self.get_otp_verification_btn()
                 ele_confirm.click()
-                time.sleep(5)
                 retry += 1
+                time.sleep(5)
                 ele_otp = self.get_otp_input()
                 if ele_otp is None or retry > 5:
                     self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug4.png")
@@ -120,9 +123,22 @@ class Robot:
 
     def get_otp_input(self):
         try:
-            ele_otp = self.browser.find_element(By.XPATH,
-                                                "//input[contains(@placeholder, 'Enter the 6-digit code')]")
+            ele_otp = self.browser.find_element(By.ID, "challenge_code")
             return ele_otp
+        except NoSuchElementException:
+            return None
+
+    def get_trust_device_checkbox(self):
+        try:
+            ele_trust_device = self.browser.find_element(By.ID, "trust_device_checkbox")
+            return ele_trust_device
+        except NoSuchElementException:
+            return None
+
+    def get_otp_verification_btn(self):
+        try:
+            ele_confirm_btn = self.browser.find_element(By.XPATH, "//input[(@type='submit') and (@value = 'Verify')]")
+            return ele_confirm_btn
         except NoSuchElementException:
             return None
 
@@ -184,7 +200,8 @@ class Robot:
         try:
             host_remaining_days = host.find_element(By.XPATH, ".//a[@class='no-link-style']").text
         except:
-            host_remaining_days = host.find_element(By.XPATH, ".//a[text()='Active']").get_attribute("data-original-title")
+            host_remaining_days = host.find_element(By.XPATH, ".//a[text()='Active']").get_attribute(
+                "data-original-title")
             pass
         regex_match = re.search("in (\\d+) day", host_remaining_days)
         if regex_match is None:
