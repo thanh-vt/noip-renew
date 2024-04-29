@@ -224,23 +224,24 @@ class Robot:
 
 
 def main(argv=None):
-    noip_username, noip_password, debug, = get_args_values(argv)
-    return (Robot(noip_username, noip_password, debug)).run()
+    noip_username, noip_password, noip_otp_secret, debug = get_args_values(argv)
+    return (Robot(noip_username, noip_password, noip_otp_secret, debug)).run()
 
 
 def get_args_values(argv):
     if argv is None:
         argv = sys.argv
-    if len(argv) < 3:
-        print(f"Usage: {argv[0]} <noip_username> <noip_password> [<debug-level>] ")
+    if len(argv) < 4:
+        print(f"Usage: {argv[0]} <noip_username> <noip_password> <noip_otp_secret> [<debug-level>] ")
         sys.exit(1)
 
     noip_username = argv[1]
     noip_password = argv[2]
+    noip_otp_secret = argv[3]
     debug = 1
-    if len(argv) > 3:
-        debug = int(argv[3])
-    return noip_username, noip_password, debug
+    if len(argv) > 4:
+        debug = int(argv[4])
+    return noip_username, noip_password, noip_otp_secret, debug
 
 
 if __name__ == "__main__":

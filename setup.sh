@@ -103,8 +103,8 @@ function deploy() {
 function noip() {
     echo "Enter your No-IP Account details..."
     read -p 'Username: ' uservar
-    read -sp 'Password: ' passvar
-    read -sp 'OTP Secret: ' otpsecretvar
+    read -sp 'Password: \n' passvar
+    read -sp 'OTP Secret: \n' otpsecretvar
 
     passvar=`echo -n $passvar | base64`
     echo
