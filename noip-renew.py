@@ -19,11 +19,12 @@ import re
 import subprocess
 import sys
 import time
+import pyotp
 from datetime import date
 from datetime import timedelta
 
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
@@ -45,10 +46,11 @@ class Robot:
     HOST_URL = "https://my.noip.com/dynamic-dns"
     SCREENSHOT_DIR = "screenshots/"
 
-    def __init__(self, username, password, debug):
+    def __init__(self, username, password, otp_secret, debug):
         self.debug = debug
         self.username = username
         self.password = password
+        self.otp_secret = otp_secret
         self.browser = self.init_browser()
         self.logger = Logger(debug)
         is_exist = os.path.exists(Robot.SCREENSHOT_DIR)
@@ -92,9 +94,37 @@ class Robot:
         ele_pwd.click()
         ele_pwd.send_keys(decodedPassword)
         self.browser.find_element(By.ID, "clogs-captcha-button").click()
+
         if self.debug > 1:
             time.sleep(5)
             self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug2.png")
+            time.sleep(5)
+            retry = 0
+            while True:
+                ele_otp = self.get_otp_input()
+                if ele_otp is None:
+                    self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.png")
+                    break
+                totp = pyotp.TOTP(self.otp_secret)
+                otp = totp.now()
+                ele_otp.send_keys(otp)
+                self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.png")
+                ele_confirm = self.browser.find_element(By.XPATH, "//button[contains(text(), 'Verify')]")
+                ele_confirm.click()
+                time.sleep(10)
+                retry += 1
+                ele_otp = self.get_otp_input()
+                if ele_otp is None or retry > 5:
+                    self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug4.png")
+                    break
+
+    def get_otp_input(self):
+        try:
+            ele_otp = self.browser.find_element(By.XPATH,
+                                                "//input[contains(@placeholder, 'Enter the 6-digit code')]")
+            return ele_otp
+        except NoSuchElementException:
+            return None
 
     def update_hosts(self):
         count = 0

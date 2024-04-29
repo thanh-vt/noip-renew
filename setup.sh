@@ -104,12 +104,14 @@ function noip() {
     echo "Enter your No-IP Account details..."
     read -p 'Username: ' uservar
     read -sp 'Password: ' passvar
+    read -sp 'OTP Secret: ' otpsecretvar
 
     passvar=`echo -n $passvar | base64`
     echo
 
     $SUDO sed -i 's/USERNAME=".*"/USERNAME="'$uservar'"/1' $INSTEXE
     $SUDO sed -i 's/PASSWORD=".*"/PASSWORD="'$passvar'"/1' $INSTEXE
+    $SUDO sed -i 's/OTP_SECRET=".*"/OTP_SECRET="'$otpsecretvar'"/1' $INSTEXE
 }
 
 function installer() {
