@@ -109,7 +109,7 @@ class Robot:
                 otp = totp.now()
                 ele_otp.send_keys(otp)
                 self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.png")
-                ele_confirm = self.browser.find_element(By.XPATH, "//button[contains(text(), 'Verify')]")
+                ele_confirm = self.browser.find_element(By.XPATH, "//input[(@type='submit') and (@value = 'Verify')]")
                 ele_confirm.click()
                 time.sleep(10)
                 retry += 1
