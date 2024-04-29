@@ -158,7 +158,7 @@ class Robot:
             expiration_days = self.get_host_expiration_days(host, iteration)
             next_renewal.append(expiration_days)
             self.logger.log(f"{host_name} expires in {str(expiration_days)} days")
-            if expiration_days <= 7:
+            if expiration_days <= 7 and host_button is not None:
                 self.update_host(host_button, host_name)
                 count += 1
             iteration += 1
@@ -215,7 +215,12 @@ class Robot:
 
     @staticmethod
     def get_host_button(host, iteration):
-        return host.find_element(By.XPATH, ".//following-sibling::td[5]/button[contains(@class, 'btn')]")
+        try:
+            host_confirm_btn = host.find_element(By.XPATH,
+                                                 ".//following-sibling::td[5]/button[contains(text(), 'Confirm')]")
+            return host_confirm_btn
+        except NoSuchElementException:
+            return None
 
     def get_hosts(self):
         host_tds = self.browser.find_elements(By.XPATH, "//td[@data-title=\"Host\"]")
