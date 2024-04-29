@@ -94,6 +94,7 @@ class Robot:
         ele_pwd.click()
         ele_pwd.send_keys(decodedPassword)
         self.browser.find_element(By.ID, "clogs-captcha-button").click()
+        totp = pyotp.TOTP(self.otp_secret)
 
         if self.debug > 1:
             time.sleep(5)
@@ -105,13 +106,12 @@ class Robot:
                 if ele_otp is None:
                     self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.png")
                     break
-                totp = pyotp.TOTP(self.otp_secret)
                 otp = totp.now()
                 ele_otp.send_keys(otp)
                 self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.png")
                 ele_confirm = self.browser.find_element(By.XPATH, "//input[(@type='submit') and (@value = 'Verify')]")
                 ele_confirm.click()
-                time.sleep(10)
+                time.sleep(5)
                 retry += 1
                 ele_otp = self.get_otp_input()
                 if ele_otp is None or retry > 5:
@@ -189,7 +189,7 @@ class Robot:
         regex_match = re.search("in (\\d+) day", host_remaining_days)
         if regex_match is None:
             raise Exception("Expiration days label does not match the expected pattern in iteration: {iteration}")
-        expiration_days = int(regex_match.group(0))
+        expiration_days = int(regex_match.group(1))
         return expiration_days
 
     @staticmethod
