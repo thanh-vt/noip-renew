@@ -158,7 +158,7 @@ class Robot:
             expiration_days = self.get_host_expiration_days(host, iteration)
             next_renewal.append(expiration_days)
             self.logger.log(f"{host_name} expires in {str(expiration_days)} days")
-            if expiration_days <= 7 and host_button is not None:
+            if host_button is not None:
                 self.update_host(host_button, host_name)
                 count += 1
             iteration += 1
