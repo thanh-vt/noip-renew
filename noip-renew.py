@@ -25,6 +25,7 @@ from datetime import timedelta
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.webdriver import Keys
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
@@ -101,13 +102,19 @@ class Robot:
             self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug2.png")
             time.sleep(5)
             retry = 0
+            is_otp_single = True
             while True:
                 ele_otp = self.get_otp_input()
-                if ele_otp is None:
-                    self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.png")
-                    break
                 otp = totp.now()
-                ele_otp.send_keys(otp)
+                if ele_otp is not None:
+                    ele_otp.send_keys(otp)
+                ele_otp_s = self.get_otp_inputs()
+                if ele_otp_s is not None:
+                    is_otp_single = False
+                    for i, char in enumerate(otp):
+                        ele_otp_s[i].send_keys(char)
+                self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.png")
+
                 ele_trust_device = self.get_trust_device_checkbox()
                 if ele_trust_device.get_attribute("value") != "1":
                     ele_trust_device.click()
@@ -116,15 +123,29 @@ class Robot:
                 ele_confirm.click()
                 retry += 1
                 time.sleep(5)
-                ele_otp = self.get_otp_input()
-                if ele_otp is None or retry > 5:
-                    self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug4.png")
-                    break
+                if is_otp_single:
+                    ele_otp = self.get_otp_input()
+                    if ele_otp is None or retry > 5:
+                        self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug4.png")
+                        break
+                else:
+                    ele_otp_s = self.get_otp_inputs()
+                    if ele_otp_s is None or retry > 5:
+                        self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug4.png")
+                        break
 
     def get_otp_input(self):
         try:
             ele_otp = self.browser.find_element(By.ID, "challenge_code")
             return ele_otp
+        except NoSuchElementException:
+            return None
+
+    def get_otp_inputs(self):
+        try:
+            ele_otp_wrapper = self.browser.find_element(By.ID, "totp-input")
+            otp_digit_inputs = ele_otp_wrapper.find_elements(By.NAME, "input")
+            return otp_digit_inputs
         except NoSuchElementException:
             return None
 
