@@ -137,6 +137,9 @@ class Robot:
     def get_otp_input(self):
         try:
             ele_otp = self.browser.find_element(By.ID, "challenge_code")
+            ele_type = ele_otp.get_attribute("type")
+            if ele_type == "hidden":
+                return None
             return ele_otp
         except NoSuchElementException:
             return None
