@@ -113,12 +113,12 @@ class Robot:
                     is_otp_single = False
                     for i, char in enumerate(otp):
                         ele_otp_s[i].send_keys(char)
-                self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.png")
+                self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.1.png")
 
                 ele_trust_device = self.get_trust_device_checkbox()
                 if ele_trust_device.get_attribute("value") != "1":
                     ele_trust_device.click()
-                self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.png")
+                self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.2.png")
                 ele_confirm = self.get_otp_verification_btn()
                 ele_confirm.click()
                 retry += 1
@@ -147,7 +147,7 @@ class Robot:
     def get_otp_inputs(self):
         try:
             ele_otp_wrapper = self.browser.find_element(By.ID, "totp-input")
-            otp_digit_inputs = ele_otp_wrapper.find_elements(By.NAME, "input")
+            otp_digit_inputs = ele_otp_wrapper.find_elements(By.XPATH, ".//input")
             return otp_digit_inputs
         except NoSuchElementException:
             return None
@@ -241,7 +241,7 @@ class Robot:
     def get_host_button(host, iteration):
         try:
             host_confirm_btn = host.find_element(By.XPATH,
-                                                 ".//following-sibling::td[5]/button[contains(text(), 'Confirm')]")
+                                                 ".//following-sibling::td[5]//button[normalize-space()='Confirm']")
             return host_confirm_btn
         except NoSuchElementException:
             return None
