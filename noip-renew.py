@@ -235,7 +235,7 @@ class Robot:
 
     @staticmethod
     def get_host_link(host, iteration):
-        return host.find_element(By.XPATH, ".//a[@class='link-info cursor-pointer']")
+        return host.find_element(By.XPATH, ".//a[contains(@class, 'link-info') and contains(@class, 'cursor-pointer')]")
 
     @staticmethod
     def get_host_button(host, iteration):
