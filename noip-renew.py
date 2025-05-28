@@ -68,7 +68,7 @@ class Robot:
         options.add_argument("disable-features=VizDisplayCompositor")
         options.add_argument("headless")
         options.add_argument("no-sandbox")  # need when run in docker
-        options.add_argument("window-size=1200x800")
+        options.add_argument("window-size=1280x720")
         options.add_argument(f"user-agent={Robot.USER_AGENT}")
         if 'https_proxy' in os.environ:
             options.add_argument("proxy-server=" + os.environ['https_proxy'])
@@ -112,15 +112,19 @@ class Robot:
                 if ele_otp_s is not None:
                     is_otp_single = False
                     for i, char in enumerate(otp):
+                        self.logger.log(f"Send OTP cell #{i} value {char}")
                         ele_otp_s[i].send_keys(char)
                 self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.1.png")
 
                 ele_trust_device = self.get_trust_device_checkbox()
-                if ele_trust_device.get_attribute("value") != "1":
+                if not ele_trust_device.is_selected():
+                    self.logger.log("Before click trust device checkbox")
                     ele_trust_device.click()
-                self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.2.png")
                 ele_confirm = self.get_otp_verification_btn()
-                ele_confirm.click()
+                self.browser.execute_script("arguments[0].scrollIntoView();", ele_confirm)
+                self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug3.2.png")
+                self.logger.log("Before click verify OTP")
+                self.browser.execute_script("arguments[0].click();", ele_confirm)
                 retry += 1
                 time.sleep(5)
                 if is_otp_single:
@@ -133,7 +137,7 @@ class Robot:
                     if ele_otp_s is None or retry > 5:
                         self.browser.save_screenshot(Robot.SCREENSHOT_DIR + "debug4.png")
                         break
-
+                self.logger.log("Finish logging in!")
     def get_otp_input(self):
         try:
             ele_otp = self.browser.find_element(By.ID, "challenge_code")
